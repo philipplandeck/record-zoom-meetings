@@ -1,2 +1,2 @@
-# record-zoom-meetings
-This tool allows you to record a Zoom meeting at a specific time by using its meeting-ID and password or alternatively use a link to a meeting.
+# Record Zoom Meetings
+Record a Zoom meeting via NVIDIA ShadowPlay by using its Invitation Link or Meeting-ID and Password.

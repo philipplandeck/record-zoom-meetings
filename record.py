@@ -1,65 +1,58 @@
 #!/usr/bin/env python3
 """
-This tool allows you to record a Zoom meeting at a specific time by using its
-meeting-ID and password or a link to the meeting.
+Record a Zoom meeting via NVIDIA ShadowPlay by using its Invitation Link or
+Meeting-ID and Password.
+
+See "python3 record.py -h" for more information.
 
 Copyright (c) 2022 Philipp Landeck
 """
-
 import argparse
 import os
+import sys
+from pathlib import Path
 
 from Recorder import Recorder
 
 
 def parse_arguments():
-    # Default path of Zoom
-    zoom_path = rf"{os.path.expanduser('~')}\AppData\Roaming\Zoom\bin\Zoom.exe"
-
-    # Structured as a decision tree
     parser = argparse.ArgumentParser(
-        description="This tool allows you to record a Zoom meeting at a specific time "
-        "by using its meeting-ID and password or a link to the meeting.")
+        description="Record a Zoom meeting via NVIDIA ShadowPlay by using its "
+        "Invitation Link or Meeting-ID and Password.")
+    invitation_type = parser.add_mutually_exclusive_group(required=True)
+    invitation_type.add_argument(
+        "--link",
+        dest="link",
+        type=str,
+        help="Invitation link")
+    invitation_type.add_argument(
+        "--id",
+        dest="id",
+        type=str,
+        help="Meeting-ID")
+    parser.add_argument(
+        "--pw",
+        dest="pw",
+        required='--id' in sys.argv,
+        type=str,
+        help="Password")
     parser.add_argument(
         "--zoom-dir",
         dest="zoom_dir",
-        type=str,
-        default=zoom_path,
-        help="Enter the path of Zoom.exe on your device if not default")
+        type=Path,
+        default=Path(rf"{os.path.expanduser('~')}\AppData\Roaming\Zoom\bin\Zoom.exe"),
+        help="Path of Zoom.exe if not default")
     parser.add_argument(
         "--start-time",
         dest="start_time",
         type=str,
-        help="Enter the start time of the meeting in the format HH:MM")
+        help="Start time of the meeting in the format HH:MM")
     parser.add_argument(
         "--record-time",
         dest="record_time",
-        type=float,
+        type=int,
         default=100,
-        help="Enter the time to record in minutes")
-    test_or_normal = parser.add_mutually_exclusive_group(required=True)
-    test_or_normal.add_argument(
-        "--test",
-        dest="test",
-        action='store_true',
-        help="Record a test meeting")
-    link_or_id = test_or_normal.add_mutually_exclusive_group()
-    link_or_id.add_argument(
-        "--link",
-        dest="link",
-        type=str,
-        help="Enter invitation link")
-    login_with_id = link_or_id.add_argument_group()
-    login_with_id.add_argument(
-        "--id",
-        dest="id",
-        type=str,
-        help="Enter meeting-ID")
-    login_with_id.add_argument(
-        "--pw",
-        dest="pw",
-        type=str,
-        help="Enter password")
+        help="Record time in minutes")
     return parser.parse_args()
 
 
